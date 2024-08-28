@@ -1,0 +1,13 @@
+{
+    "name": "google-sheet-pwa",
+    "version": "1.0.0",
+    "description": "PWA for Google Sheet interaction",
+    "main": "server/server.js",
+    "scripts": {
+      "start": "node server/server.js"
+    },
+    "dependencies": {
+      "express": "^4.17.1",
+      "googleapis": "^92.0.0"
+    }
+  }

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <link rel="apple-touch-icon" href="/LogoManitou-180x180.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sheet PWA</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf8su5VGkJyPrblaoNpXkYGIgPkmB5eQw&callback=initMap" async defer></script>
+</head>
+<body>
+    <div class="main-container">
+        <div class="container">
+            <h1>Google Sheet PWA</h1>
+            <input type="text" id="elementId" placeholder="Element ID">
+            <button id="getData">Get Data</button>
+            <div id="result">
+                <input type="text" id="latitude" placeholder="Latitude">
+                <input type="text" id="longitude" placeholder="Longitude">
+                <input type="text" id="commentaire" placeholder="Commentaire">
+                <input type="text" id="url" placeholder="URL Google Maps">
+            </div>
+            <button id="setData">Set Data</button>
+            <button onclick="getCurrentLocation()">Obtenir la position actuelle</button>
+        </div>
+        <div class="map-container">
+            <h1>Google Map</h1>
+            <div id="map"></div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+    
+</body>
+</html>
