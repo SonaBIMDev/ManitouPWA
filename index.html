@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <link rel="apple-touch-icon" href="/LogoManitou-180x180.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Une PWA pour interagir avec Google Sheets et Google Maps">
+    <meta name="theme-color" content="#votre_couleur_ici">
     <title>Google Sheet PWA</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="/style.css">
     <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/LogoManitou-180x180.png">    
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf8su5VGkJyPrblaoNpXkYGIgPkmB5eQw&callback=initMap" async defer></script>
 </head>
 <body>
@@ -30,7 +32,13 @@
             <div id="map"></div>
         </div>
     </div>
-    <script src="app.js"></script>
-    
+    <script src="/app.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then((reg) => console.log('Service worker registered', reg))
+                .catch((err) => console.log('Service worker not registered', err));
+        }
+    </script>
 </body>
 </html>

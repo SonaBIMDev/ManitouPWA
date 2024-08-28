@@ -4,7 +4,8 @@ const path = require('path');
 
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use(express.static(path.join(__dirname, '..')));
+
 
 const auth = new google.auth.GoogleAuth({
     keyFile: path.join(__dirname, '..', 'credentials.json'),
@@ -82,7 +83,25 @@ app.post('/api/setData', async (req, res) => {
     }
 });
 
+// Route pour la page d'accueil
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '..', 'index.html'));
+  });
 
+  
+  const fs = require('fs');
+
+  app.use((req, res) => {
+    const filePath = path.join(__dirname, '..', req.url);
+    if (fs.existsSync(filePath)) {
+      res.sendFile(filePath);
+    } else {
+      res.status(404).sendFile(path.join(__dirname, '..', 'index.html'));
+    }
+  });
+  
+
+  
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Serveur en écoute sur le port ${PORT}`);
