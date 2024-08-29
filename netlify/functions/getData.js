@@ -7,11 +7,9 @@ exports.handler = async (event, context) => {
     const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID_FROM_URL);
     console.log("GoogleSpreadsheet initialisé");
 
-    // Vérification des variables d'environnement
     console.log("Email du compte de service:", process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
     console.log("ID de la feuille de calcul:", process.env.GOOGLE_SPREADSHEET_ID_FROM_URL);
     
-    // Tentative d'authentification
     try {
       await doc.useServiceAccountAuth({
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
@@ -19,30 +17,14 @@ exports.handler = async (event, context) => {
       });
       console.log("Authentification réussie");
     } catch (authError) {
-      console.error("Erreur d'authentification:", authError);
+      console.error("Erreur d'authentification détaillée:", authError);
       return {
         statusCode: 500,
-        body: JSON.stringify({ success: false, error: "Erreur d'authentification" }),
+        body: JSON.stringify({ success: false, error: "Erreur d'authentification", details: authError.message }),
       };
     }
 
-    // Tentative de chargement des informations du document
-    try {
-      await doc.loadInfo();
-      console.log("Informations du document chargées");
-      console.log("Titre du document:", doc.title);
-    } catch (loadError) {
-      console.error("Erreur de chargement des informations:", loadError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ success: false, error: "Erreur de chargement des informations du document" }),
-      };
-    }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ success: true, message: "Connexion à la Google Sheet réussie" }),
-    };
+    // Le reste de votre code...
 
   } catch (error) {
     console.error('Erreur générale dans getData:', error);
