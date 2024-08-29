@@ -15,7 +15,7 @@ const auth = new google.auth.GoogleAuth({
 const sheets = google.sheets({ version: 'v4', auth });
 
 const SPREADSHEET_ID = '1CpczW9Y4ggB1HnUWBn88vG3Gnt-tFiPnLXEZl5s1UXU';
-const RANGE = 'COORDINATES!A2:E';
+const RANGE = 'COORDINATES!A2:E';a
 
 app.get('/api/getData', async (req, res) => {
     const { elementId } = req.query;

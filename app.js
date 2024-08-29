@@ -103,6 +103,34 @@ function updateCoordinates(latLng) {
 getDataButton.addEventListener('click', async () => {
     const elementId = elementIdInput.value;
     try {
+        const response = await fetch('/.netlify/functions/getData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ elementId }),
+        });
+        const data = await response.json();
+        if (data.success) {
+            latitudeInput.value = data.latitude;
+            longitudeInput.value = data.longitude;
+            commentaireInput.value = data.commentaire;
+            urlInput.value = data.url;
+
+            // Mettez à jour la carte avec les nouvelles coordonnées
+            updateMap(data.latitude, data.longitude);
+        } else {
+            alert('Données non trouvées');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue');
+    }
+});
+
+/*getDataButton.addEventListener('click', async () => {
+    const elementId = elementIdInput.value;
+    try {
         const response = await fetch(`/api/getData?elementId=${elementId}`);
         const data = await response.json();
         if (data.success) {
@@ -122,6 +150,7 @@ getDataButton.addEventListener('click', async () => {
         alert('Une erreur est survenue');
     }
 });
+*/
 
 function getCurrentLocation() {
     if (navigator.geolocation) {
