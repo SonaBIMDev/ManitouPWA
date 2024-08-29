@@ -100,7 +100,41 @@ function updateCoordinates(latLng) {
     map.setCenter(latLng);
 }
 
+const isNetlify = window.location.hostname.includes('netlify.app');
+const apiUrl = isNetlify ? '/.netlify/functions/getData' : '/api/getData';
+
 getDataButton.addEventListener('click', async () => {
+    const elementId = elementIdInput.value;
+    try {
+        let response;
+        if (isNetlify) {
+            response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ elementId }),
+            });
+        } else {
+            response = await fetch(`${apiUrl}?elementId=${elementId}`);
+        }
+        const data = await response.json();
+        if (data.success) {
+            latitudeInput.value = data.latitude;
+            longitudeInput.value = data.longitude;
+            commentaireInput.value = data.commentaire;
+            urlInput.value = data.url;
+
+            updateMap(data.latitude, data.longitude);
+        } else {
+            alert('Données non trouvées');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue');
+    }
+});
+
+
+/*getDataButton.addEventListener('click', async () => {
     const elementId = elementIdInput.value;
     try {
         const response = await fetch('/.netlify/functions/getData', {
@@ -127,6 +161,7 @@ getDataButton.addEventListener('click', async () => {
         alert('Une erreur est survenue');
     }
 });
+*/
 
 /*getDataButton.addEventListener('click', async () => {
     const elementId = elementIdInput.value;
