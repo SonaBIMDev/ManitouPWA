@@ -13,7 +13,7 @@ exports.handler = async (event, context) => {
         });
         await doc.loadInfo(); // loads document properties and worksheets. required.
         const sheet = doc.sheetsByIndex[0]; // you may want to customize this if you have more than 1 sheet
-        // console.log('accessing', sheet.title, 'it has ', sheet.rowCount, ' rows');
+        console.log('accessing', sheet.title, 'it has ', sheet.rowCount, ' rows');
         
         } catch (error) {
         console.error('Erreur générale dans getData:', error);
