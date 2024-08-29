@@ -100,6 +100,7 @@ function updateCoordinates(latLng) {
     map.setCenter(latLng);
 }
 
+
 const isNetlify = window.location.hostname.includes('netlify.app');
 const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
 
