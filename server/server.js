@@ -17,17 +17,15 @@ const sheets = google.sheets({ version: 'v4', auth });
 const SPREADSHEET_ID = '1CpczW9Y4ggB1HnUWBn88vG3Gnt-tFiPnLXEZl5s1UXU';
 const RANGE = 'COORDINATES!A2:E';
 
-app.get('/api/getData', async (req, res) => {
-    const { elementId } = req.query;
+app.post('/api/getData', async (req, res) => {
+    const { elementId } = req.body;  // Notez le changement ici de req.query à req.body
     try {
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: SPREADSHEET_ID,
             range: RANGE,
         });
-
         const rows = response.data.values;
         const row = rows.find(r => r[0] === elementId);
-
         if (row) {
             res.json({
                 success: true,
@@ -44,6 +42,7 @@ app.get('/api/getData', async (req, res) => {
         res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
+
 
 app.post('/api/setData', async (req, res) => {
     const { elementId, latitude, longitude, commentaire, url } = req.body;
