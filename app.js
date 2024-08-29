@@ -101,21 +101,17 @@ function updateCoordinates(latLng) {
 }
 
 const isNetlify = window.location.hostname.includes('netlify.app');
-const apiUrl = isNetlify ? '/.netlify/functions/getData' : '/api/getData';
+const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
 
 getDataButton.addEventListener('click', async () => {
     const elementId = elementIdInput.value;
     try {
-        let response;
-        if (isNetlify) {
-            response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ elementId }),
-            });
-        } else {
-            response = await fetch(`${apiUrl}?elementId=${elementId}`);
-        }
+        const response = await fetch(`${apiBaseUrl}/getData`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ elementId }),
+        });
+
         const data = await response.json();
         if (data.success) {
             latitudeInput.value = data.latitude;
@@ -132,6 +128,7 @@ getDataButton.addEventListener('click', async () => {
         alert('Une erreur est survenue');
     }
 });
+
 
 
 /*getDataButton.addEventListener('click', async () => {
