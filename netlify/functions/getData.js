@@ -1,47 +1,44 @@
-const { google } = require('googleapis');
+const { GoogleSpreadsheet } = require('google-spreadsheet');
 
 exports.handler = async (event, context) => {
-  const auth = new google.auth.GoogleAuth({
-    keyFile: 'credentials.json',
-    scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-  });
-
-  const sheets = google.sheets({ version: 'v4', auth });
-  const SPREADSHEET_ID = '1CpczW9Y4ggB1HnUWBn88vG3Gnt-tFiPnLXEZl5s1UXU';
-  const RANGE = 'COORDINATES!A2:E';
-
   try {
-    const { elementId } = JSON.parse(event.body);
-    const response = await sheets.spreadsheets.values.get({
-      spreadsheetId: SPREADSHEET_ID,
-      range: RANGE,
+    const doc = new GoogleSpreadsheet(process.env.GOOGLE_SPREADSHEET_ID_FROM_URL);
+
+    await doc.useServiceAccountAuth({
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
     });
 
-    const rows = response.data.values;
-    const row = rows.find(r => r[0] === elementId);
+    await doc.loadInfo();
+    const sheet = doc.sheetsByIndex[0];
+
+    const { elementId } = JSON.parse(event.body);
+
+    const rows = await sheet.getRows();
+    const row = rows.find(r => r.elementId === elementId);
 
     if (row) {
       return {
         statusCode: 200,
         body: JSON.stringify({
           success: true,
-          latitude: row[1],
-          longitude: row[2],
-          commentaire: row[3],
-          url: row[4],
-        })
+          latitude: row.latitude,
+          longitude: row.longitude,
+          commentaire: row.commentaire,
+          url: row.url,
+        }),
       };
     } else {
       return {
         statusCode: 404,
-        body: JSON.stringify({ success: false })
+        body: JSON.stringify({ success: false, message: 'Données non trouvées' }),
       };
     }
   } catch (error) {
-    console.error('Erreur:', error);
+    console.error('Erreur dans getData:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ success: false, error: 'Erreur serveur' })
+      body: JSON.stringify({ success: false, error: error.message }),
     };
   }
 };
