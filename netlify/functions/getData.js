@@ -10,19 +10,13 @@ exports.handler = async (event, context) => {
     console.log("Email du compte de service:", process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL);
     console.log("ID de la feuille de calcul:", process.env.GOOGLE_SPREADSHEET_ID_FROM_URL);
     
-    try {
-      await doc.useServiceAccountAuth({
-        client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-      });
-      console.log("Authentification réussie");
-    } catch (authError) {
-      console.error("Erreur d'authentification détaillée:", authError);
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ success: false, error: "Erreur d'authentification", details: authError.message }),
-      };
-    }
+    const credentials = {
+      client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+      private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    };
+
+    await doc.useServiceAccountAuth(credentials);
+    console.log("Authentification réussie");
 
     // Le reste de votre code...
 
