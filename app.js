@@ -97,6 +97,7 @@ function updateCoordinates(latLng) {
 
     // Générer l'URL Google Maps
     const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
+    console.error('googleMapsUrl:', googleMapsUrl);
 
     // Mettre à jour le champ texte URL avec l'URL générée
     document.getElementById('url').value = googleMapsUrl;
