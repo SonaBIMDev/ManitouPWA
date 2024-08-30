@@ -114,41 +114,36 @@ const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
 getDataButton.addEventListener('click', async () => {
     const elementId = elementIdInput.value;
     try {
-      const response = await fetch(`${apiBaseUrl}/getData`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ elementId }),
-      });
-  
-      console.log('Status de la réponse:', response.status);
-      console.log('Headers de la réponse:', response.headers);
-  
-      const contentType = response.headers.get("content-type");
-      console.log('Content-Type de la réponse:', contentType);
-  
-      if (contentType && contentType.indexOf("application/json") !== -1) {
-        const data = await response.json();
-        console.log('Données reçues:', data);
-  
-        if (data.success) {
-          latitudeInput.value = data.latitude;
-          longitudeInput.value = data.longitude;
-          commentaireInput.value = data.commentaire;
-          urlInput.value = data.google_maps;  // Notez le changement ici
-          updateMap(data.latitude, data.longitude);
+        const response = await fetch(`${apiBaseUrl}/getData`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ elementId }),
+        });
+
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            const data = await response.json();
+            if (data.success) {
+                latitudeInput.value = data.latitude;
+                longitudeInput.value = data.longitude;
+                commentaireInput.value = data.commentaire;
+                urlInput.value = data.google_maps;  // Notez le changement ici
+
+                updateMap(data.latitude, data.longitude);
+            } else {
+                alert('Données non trouvées');
+            }
         } else {
-          alert('Données non trouvées');
+            const text = await response.text();
+            console.error('Réponse non-JSON reçue:', text);
+            alert('Erreur: Réponse inattendue du serveur');
         }
-      } else {
-        const text = await response.text();
-        console.error('Réponse non-JSON reçue:', text);
-        alert('Erreur: Réponse inattendue du serveur');
-      }
     } catch (error) {
-      console.error('Erreur:', error);
-      alert('Une erreur est survenue');
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue');
     }
-  });
+});
+
   
 
 
