@@ -130,6 +130,7 @@ getDataButton.addEventListener('click', async () => {
                 urlInput.value = data.google_maps;  
 
                 updateMap(data.latitude, data.longitude);
+                
             } else {
                 alert('Données non trouvées');
             }
