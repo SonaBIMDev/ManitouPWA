@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "express": "^4.17.1",
+        "firebase": "^10.13.1",
         "google-spreadsheet": "^4.1.2",
         "googleapis": "^92.0.0",
         "install": "^0.13.0",

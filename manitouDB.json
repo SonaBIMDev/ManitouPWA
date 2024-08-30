@@ -1,0 +1,40 @@
+{
+  "elements": {
+    "1": {
+      "elementid": 272207,
+      "latitude": 47.212662998,
+      "longitude": -1.546229996,
+      "commentaire": "Manu",
+      "google_maps": "https://maps.app.goo.gl/EJV8PWrJ3gMA2tZWA"
+    },
+    "2": {
+      "elementid": 317455,
+      "latitude": 47.212356649,
+      "longitude": -1.546047067,
+      "commentaire": "Pierre",
+      "google_maps": "https://maps.app.goo.gl/SnwspjRME1wjNPss7"
+    },
+    "3": {
+      "elementid": 265928,
+      "latitude": 47.2123204899,
+      "longitude": -1.546011546,
+      "commentaire": "Accessoire",
+      "google_maps": "https://maps.app.goo.gl/QvrUmcVwNGraege58"
+    },
+    "4": {
+      "elementid": 423036,
+      "latitude": 47.212229487,
+      "longitude": -1.545941067,
+      "commentaire": "Jérôme",
+      "google_maps": "https://maps.app.goo.gl/34YQHndw8fe19W7F9"
+    },
+    "5": {
+      "elementid": 292304,
+      "latitude": 47.212127324,
+      "longitude": -1.545819729,
+      "commentaire": "Machine",
+      "google_maps": "https://maps.app.goo.gl/3W5XvAxb1oxGcfWX9"
+    }
+	
+  }
+}
