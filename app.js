@@ -146,97 +146,6 @@ getDataButton.addEventListener('click', async () => {
 
   
 
-
-
-/*
-const isNetlify = window.location.hostname.includes('netlify.app');
-const apiUrl = isNetlify ? '/.netlify/functions/getData' : '/api/getData';
-
-getDataButton.addEventListener('click', async () => {
-    const elementId = elementIdInput.value;
-    try {
-        let response;
-        if (isNetlify) {
-            response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ elementId }),
-            });
-        } else {
-            response = await fetch(`${apiUrl}?elementId=${elementId}`);
-        }
-        const data = await response.json();
-        if (data.success) {
-            latitudeInput.value = data.latitude;
-            longitudeInput.value = data.longitude;
-            commentaireInput.value = data.commentaire;
-            urlInput.value = data.url;
-
-            updateMap(data.latitude, data.longitude);
-        } else {
-            alert('Données non trouvées');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
-    }
-});
-*/
-
-
-/*getDataButton.addEventListener('click', async () => {
-    const elementId = elementIdInput.value;
-    try {
-        const response = await fetch('/.netlify/functions/getData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ elementId }),
-        });
-        const data = await response.json();
-        if (data.success) {
-            latitudeInput.value = data.latitude;
-            longitudeInput.value = data.longitude;
-            commentaireInput.value = data.commentaire;
-            urlInput.value = data.url;
-
-            // Mettez à jour la carte avec les nouvelles coordonnées
-            updateMap(data.latitude, data.longitude);
-        } else {
-            alert('Données non trouvées');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
-    }
-});
-*/
-
-/*getDataButton.addEventListener('click', async () => {
-    const elementId = elementIdInput.value;
-    try {
-        const response = await fetch(`/api/getData?elementId=${elementId}`);
-        const data = await response.json();
-        if (data.success) {
-            latitudeInput.value = data.latitude;
-            longitudeInput.value = data.longitude;
-            commentaireInput.value = data.commentaire;
-            urlInput.value = data.url;
-
-            // Mettez à jour la carte avec les nouvelles coordonnées
-            updateMap(data.latitude, data.longitude);
-
-        } else {
-            alert('Données non trouvées');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
-    }
-});
-*/
-
 function getCurrentLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition, showError);
@@ -279,27 +188,26 @@ setDataButton.addEventListener('click', async () => {
     const latitude = latitudeInput.value;
     const longitude = longitudeInput.value;
     const commentaire = commentaireInput.value;
-    const url = urlInput.value;
-
+    const google_maps = urlInput.value;  // Assurez-vous que c'est bien 'google_maps' et non 'url'
+  
     try {
-        const response = await fetch('/api/setData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ elementId, latitude, longitude, commentaire, url }),
-        });
-        const result = await response.json();
-        if (result.success) {
-            alert('Données mises à jour avec succès');
-        } else {
-            alert('Échec de la mise à jour des données');
-        }
+      const response = await fetch(`${apiBaseUrl}/setData`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ elementId, latitude, longitude, commentaire, google_maps }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert('Données mises à jour avec succès');
+      } else {
+        alert('Échec de la mise à jour des données');
+      }
     } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
+      console.error('Erreur:', error);
+      alert('Une erreur est survenue');
     }
-});
+  });
+
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')

@@ -23,21 +23,32 @@ app.post('/api/getData', async (req, res) => {
     console.log('ElementId reçu:', elementId);
     try {
         console.log('Tentative de récupération des données pour elementId:', elementId);
-        const snapshot = await get(ref(database, `elements/${elementId}`));
+        const snapshot = await get(ref(database, 'elements'));
         console.log('Snapshot récupéré');
+        
         if (snapshot.exists()) {
-            const data = snapshot.val();
-            console.log('Données trouvées:', data);
-            res.json({
-                success: true,
-                latitude: data.latitude,
-                longitude: data.longitude,
-                commentaire: data.commentaire,
-                google_maps: data.google_maps
-            });
+            const elements = snapshot.val();
+            console.log('Données trouvées:', elements);
+            
+            // Recherche de l'élément avec l'elementId correspondant
+            const element = elements.find(el => el && el.elementid === parseInt(elementId));
+            
+            if (element) {
+                console.log('Élément trouvé:', element);
+                res.json({
+                    success: true,
+                    latitude: element.latitude,
+                    longitude: element.longitude,
+                    commentaire: element.commentaire,
+                    google_maps: element.google_maps
+                });
+            } else {
+                console.log('Aucun élément trouvé pour elementId:', elementId);
+                res.json({ success: false, message: 'Données non trouvées' });
+            }
         } else {
-            console.log('Aucune donnée trouvée pour elementId:', elementId);
-            res.json({ success: false, message: 'Données non trouvées' });
+            console.log('Aucune donnée trouvée dans la base');
+            res.json({ success: false, message: 'Aucune donnée dans la base' });
         }
     } catch (error) {
         console.error('Erreur lors de la récupération des données:', error);
@@ -45,19 +56,40 @@ app.post('/api/getData', async (req, res) => {
     }
 });
 
+
 app.post('/api/setData', async (req, res) => {
     console.log('Requête reçue sur /api/setData');
     const { elementId, latitude, longitude, commentaire, google_maps } = req.body;
     console.log('Données reçues:', { elementId, latitude, longitude, commentaire, google_maps });
     try {
-        console.log('Tentative d\'écriture des données pour elementId:', elementId);
-        await set(ref(database, `elements/${elementId}`), {
-            elementid: elementId,
+        const snapshot = await get(ref(database, 'elements'));
+        let elements = snapshot.val() || [];
+        
+        const index = elements.findIndex(el => el && el.elementid === parseInt(elementId));
+        
+        const updatedElement = {
+            elementid: parseInt(elementId),
             latitude,
             longitude,
-            commentaire,
-            google_maps
-        });
+            commentaire
+        };
+
+        // Ajouter google_maps seulement s'il est défini
+        if (google_maps !== undefined) {
+            updatedElement.google_maps = google_maps;
+        }
+
+        if (index !== -1) {
+            // Mise à jour d'un élément existant
+            elements[index] = updatedElement;
+            console.log('Élément mis à jour:', elements[index]);
+        } else {
+            // Ajout d'un nouvel élément
+            elements.push(updatedElement);
+            console.log('Nouvel élément ajouté:', elements[elements.length - 1]);
+        }
+        
+        await set(ref(database, 'elements'), elements);
         console.log('Données écrites avec succès');
         res.json({ success: true });
     } catch (error) {
@@ -65,6 +97,9 @@ app.post('/api/setData', async (req, res) => {
         res.status(500).json({ success: false, error: 'Erreur serveur' });
     }
 });
+
+
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
