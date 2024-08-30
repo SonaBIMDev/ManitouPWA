@@ -1,3 +1,15 @@
+const { initializeApp } = require('firebase/app');
+const { getDatabase, ref, get } = require('firebase/database');
+const firebaseConfig = require('./firebase-config');
+
+console.log('Début de la fonction getData');
+
+const app = initializeApp(firebaseConfig);
+console.log('Firebase app initialisée');
+
+const database = getDatabase(app);
+console.log('Database récupérée');
+
 exports.handler = async (event) => {
   try {
     console.log('Parsing du body de l\'event');
