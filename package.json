@@ -7,7 +7,7 @@
         "start": "node server/server.js"
     },
     "dependencies": {
-        "express": "^4.17.1",
+        "express": "^4.19.2",
         "firebase": "^10.13.1",
         "google-spreadsheet": "^4.1.2",
         "googleapis": "^92.0.0",
