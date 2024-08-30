@@ -127,7 +127,7 @@ getDataButton.addEventListener('click', async () => {
                 latitudeInput.value = data.latitude;
                 longitudeInput.value = data.longitude;
                 commentaireInput.value = data.commentaire;
-                urlInput.value = data.url;
+                urlInput.value = data.google_maps;  
 
                 updateMap(data.latitude, data.longitude);
             } else {
