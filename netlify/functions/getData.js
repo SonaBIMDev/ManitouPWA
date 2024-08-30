@@ -26,8 +26,22 @@ exports.handler = async (event) => {
       
       if (element) {
         console.log('Données trouvées pour elementId:', elementId);
+        console.log('Données renvoyées:', JSON.stringify({
+          success: true,
+          elementid: element.elementid,
+          latitude: element.latitude,
+          longitude: element.longitude,
+          commentaire: element.commentaire,
+          google_maps: element.google_maps
+        }));
+
         return {
           statusCode: 200,
+          headers: {
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "Content-Type"
+          },
           body: JSON.stringify({
             success: true,
             elementid: element.elementid,
