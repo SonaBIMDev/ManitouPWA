@@ -112,7 +112,8 @@ const isNetlify = window.location.hostname.includes('netlify.app');
 const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
 
 getDataButton.addEventListener('click', async () => {
-    const elementId = parseInt(elementIdInput.value, 10); // Conversion en nombre
+    //const elementId = parseInt(elementIdInput.value, 10); // Conversion en nombre
+    const elementId = elementIdInput.value;
     if (isNaN(elementId)) {
         alert('Veuillez entrer un ID d\'élément valide');
         return;
