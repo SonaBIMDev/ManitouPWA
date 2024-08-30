@@ -9,7 +9,13 @@ let map;
 let marker;
 
 // Appelez initMap au chargement de la page
-window.onload = initMap;
+window.onload = function() {
+    // Appeler la fonction initMap pour initialiser la carte
+    initMap();
+
+    // Pré-remplir le champ elementId avec la valeur 272207
+    document.getElementById('elementId').value = '272207';
+};
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
