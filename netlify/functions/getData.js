@@ -1,48 +1,42 @@
-const { initializeApp } = require('firebase/app');
-const { getDatabase, ref, get } = require('firebase/database');
-const firebaseConfig = require('./firebase-config');
-
-console.log('Début de la fonction getData');
-
-const app = initializeApp(firebaseConfig);
-console.log('Firebase app initialisée');
-
-const database = getDatabase(app);
-console.log('Database récupérée');
-
 exports.handler = async (event) => {
-  console.log('Handler appelé avec event:', JSON.stringify(event));
-  
   try {
     console.log('Parsing du body de l\'event');
     const { elementId } = JSON.parse(event.body);
     console.log('ElementId reçu:', elementId);
 
     console.log('Tentative de récupération des données pour elementId:', elementId);
-    const snapshot = await get(ref(database, `elements/${elementId}`));
+    const snapshot = await get(ref(database, 'elements'));
     console.log('Snapshot récupéré');
 
     if (snapshot.exists()) {
-      console.log('Données trouvées pour elementId:', elementId);
       const data = snapshot.val();
-      console.log('Données récupérées:', JSON.stringify(data));
+      const element = data.find(item => item && item.elementid === parseInt(elementId));
       
-      return {
-        statusCode: 200,
-        body: JSON.stringify({
-          success: true,
-          elementid: data.elementid,
-          latitude: data.latitude,
-          longitude: data.longitude,
-          commentaire: data.commentaire,
-          google_maps: data.google_maps
-        })
-      };
+      if (element) {
+        console.log('Données trouvées pour elementId:', elementId);
+        return {
+          statusCode: 200,
+          body: JSON.stringify({
+            success: true,
+            elementid: element.elementid,
+            latitude: element.latitude,
+            longitude: element.longitude,
+            commentaire: element.commentaire,
+            google_maps: element.google_maps
+          })
+        };
+      } else {
+        console.log('Aucune donnée trouvée pour elementId:', elementId);
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ success: false, message: 'Données non trouvées' })
+        };
+      }
     } else {
-      console.log('Aucune donnée trouvée pour elementId:', elementId);
+      console.log('Aucune donnée trouvée dans la base');
       return {
         statusCode: 404,
-        body: JSON.stringify({ success: false, message: 'Données non trouvées' })
+        body: JSON.stringify({ success: false, message: 'Aucune donnée dans la base' })
       };
     }
   } catch (error) {

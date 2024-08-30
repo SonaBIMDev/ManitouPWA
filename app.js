@@ -112,7 +112,12 @@ const isNetlify = window.location.hostname.includes('netlify.app');
 const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
 
 getDataButton.addEventListener('click', async () => {
-    const elementId = elementIdInput.value;
+    const elementId = parseInt(elementIdInput.value, 10); // Conversion en nombre
+    if (isNaN(elementId)) {
+        alert('Veuillez entrer un ID d\'élément valide');
+        return;
+    }
+
     try {
         const response = await fetch(`${apiBaseUrl}/getData`, {
             method: 'POST',
@@ -120,7 +125,14 @@ getDataButton.addEventListener('click', async () => {
             body: JSON.stringify({ elementId }),
         });
 
-        // Vérifiez d'abord le type de contenu de la réponse
+        if (!response.ok) {
+            if (response.status === 404) {
+                alert('Données non trouvées');
+                return;
+            }
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.indexOf("application/json") !== -1) {
             const data = await response.json();
@@ -128,22 +140,20 @@ getDataButton.addEventListener('click', async () => {
                 latitudeInput.value = data.latitude;
                 longitudeInput.value = data.longitude;
                 commentaireInput.value = data.commentaire;
-                urlInput.value = data.google_maps;  
+                urlInput.value = data.google_maps;
 
                 updateMap(data.latitude, data.longitude);
-                
             } else {
-                alert('Données non trouvées');
+                alert(data.message || 'Données non trouvées');
             }
         } else {
-            // Si ce n'est pas du JSON, affichez le texte brut
             const text = await response.text();
             console.error('Réponse non-JSON reçue:', text);
             alert('Erreur: Réponse inattendue du serveur');
         }
     } catch (error) {
         console.error('Erreur:', error);
-        alert('Une erreur est survenue');
+        alert(`Une erreur est survenue: ${error.message}`);
     }
 });
 
