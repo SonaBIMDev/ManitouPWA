@@ -219,27 +219,28 @@ function showError(error) {
 }
 
 setDataButton.addEventListener('click', async () => {
-    const elementId = elementIdInput.value;
+    const elementId = supportSelect.value; // Utilisez supportSelect au lieu de elementIdInput
     const latitude = latitudeInput.value;
     const longitude = longitudeInput.value;
-  
+
     try {
-      const response = await fetch(`${apiBaseUrl}/setData`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ elementId, latitude, longitude }),
-      });
-      const result = await response.json();
-      if (result.success) {
-        alert('Données mises à jour avec succès');
-      } else {
-        alert('Échec de la mise à jour des données');
-      }
+        const response = await fetch(`${apiBaseUrl}/setData`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ elementId, latitude, longitude }),
+        });
+        const result = await response.json();
+        if (result.success) {
+            alert('Données mises à jour avec succès');
+        } else {
+            alert('Échec de la mise à jour des données');
+        }
     } catch (error) {
-      console.error('Erreur:', error);
-      alert('Une erreur est survenue');
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue');
     }
-  });
+});
+
 
 
 if ('serviceWorker' in navigator) {
