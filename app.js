@@ -4,7 +4,6 @@ const setDataButton = document.getElementById('setData');
 const latitudeInput = document.getElementById('latitude');
 const longitudeInput = document.getElementById('longitude');
 const commentaireInput = document.getElementById('commentaire');
-const imageUrlInput = document.getElementById('imagePreview');
 const urlInput = document.getElementById('url');
 let map;
 let marker;
@@ -133,8 +132,8 @@ getDataButton.addEventListener('click', async () => {
                 updateMap(data.latitude, data.longitude);
 
                 // Afficher l'image si une URL est fournie
-                if (data.imageUrlInput) {
-                    imagePreview.src = data.imageUrlInput;
+                if (data.imageUrl) {
+                    imagePreview.src = data.imageUrl;
                     imagePreview.style.display = 'block';
                 } else {
                     imagePreview.style.display = 'none';
