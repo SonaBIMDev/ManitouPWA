@@ -130,6 +130,16 @@ getDataButton.addEventListener('click', async () => {
                 urlInput.value = data.google_maps;  // Notez le changement ici
 
                 updateMap(data.latitude, data.longitude);
+
+                // Afficher l'image si une URL est fournie
+                const imagePreview = document.getElementById('imagePreview');
+                if (data.imageUrl) {
+                    imagePreview.src = data.imageUrl;
+                    imagePreview.style.display = 'block';
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+
             } else {
                 alert('Données non trouvées');
             }

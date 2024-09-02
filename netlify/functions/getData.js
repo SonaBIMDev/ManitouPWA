@@ -32,7 +32,8 @@ exports.handler = async (event) => {
           latitude: element.latitude,
           longitude: element.longitude,
           commentaire: element.commentaire,
-          google_maps: element.google_maps
+          google_maps: element.google_maps,
+          imageUrl: element.imageUrl
         }));
 
         return {
@@ -48,7 +49,8 @@ exports.handler = async (event) => {
             latitude: element.latitude,
             longitude: element.longitude,
             commentaire: element.commentaire,
-            google_maps: element.google_maps
+            google_maps: element.google_maps,
+            imageUrl: element.imageUrl
           })
         };
       } else {
