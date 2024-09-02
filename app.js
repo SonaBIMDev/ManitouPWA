@@ -6,6 +6,8 @@ const longitudeInput = document.getElementById('longitude');
 const commentaireInput = document.getElementById('commentaire');
 const imagePreview = document.getElementById('imagePreview');
 const urlInput = document.getElementById('url');
+const supportSelect = document.getElementById('supportSelect');
+
 let map;
 let marker;
 
