@@ -33,7 +33,7 @@ exports.handler = async (event) => {
           longitude: element.longitude,
           commentaire: element.commentaire,
           google_maps: element.google_maps,
-          imageUrl: element.imageUrl
+          imageUrl: element.image_url
         }));
 
         return {
@@ -50,7 +50,7 @@ exports.handler = async (event) => {
             longitude: element.longitude,
             commentaire: element.commentaire,
             google_maps: element.google_maps,
-            imageUrl: element.imageUrl
+            imageUrl: element.image_url
           })
         };
       } else {

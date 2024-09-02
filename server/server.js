@@ -41,7 +41,7 @@ app.post('/api/getData', async (req, res) => {
                     longitude: element.longitude,
                     commentaire: element.commentaire,
                     google_maps: element.google_maps,
-                    imageUrl: element.imageUrl
+                    imageUrl: element.image_url
                 });
             } else {
                 console.log('Aucun élément trouvé pour elementId:', elementId);
