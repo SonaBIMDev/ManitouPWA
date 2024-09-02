@@ -15,14 +15,15 @@
     <div class="main-container">
         <div class="container">
             <h1>Google Sheet PWA</h1>
-            <input type="text" id="elementId" placeholder="Element ID">
+            <select id="supportSelect">
+                <option value="">Quel est votre support?</option>
+                <!-- Les options seront ajoutées dynamiquement via JavaScript -->
+            </select>
             <button id="getData">Get Data</button>
             <div id="result">
                 <input type="text" id="latitude" placeholder="Latitude">
                 <input type="text" id="longitude" placeholder="Longitude">
-                <input type="text" id="commentaire" placeholder="Commentaire">                
-                <input type="text" id="url" placeholder="URL Google Maps">
-                <img id="imagePreview" src="" alt="Image preview" style="max-width: 100%; display: none;">
+                <img id="imagePreview" src="" alt="Image preview" style="width:200px; height:200px; display:none;">
             </div>
             <button id="setData">Set Data</button>
             <button onclick="getCurrentLocation()">Obtenir la position actuelle</button>

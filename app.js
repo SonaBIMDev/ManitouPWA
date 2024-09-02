@@ -4,6 +4,7 @@ const setDataButton = document.getElementById('setData');
 const latitudeInput = document.getElementById('latitude');
 const longitudeInput = document.getElementById('longitude');
 const commentaireInput = document.getElementById('commentaire');
+const imagePreview = document.getElementById('imagePreview');
 const urlInput = document.getElementById('url');
 let map;
 let marker;
@@ -12,10 +13,30 @@ let marker;
 window.onload = function() {
     // Appeler la fonction initMap pour initialiser la carte
     initMap();
-
-    // Pré-remplir le champ elementId avec la valeur 272207
-    document.getElementById('elementId').value = '272207';
+    loadSupports();    
 };
+
+// Fonction pour charger la liste des supports
+async function loadSupports() {
+    try {
+        const response = await fetch(`${apiBaseUrl}/getSupports`);
+        const data = await response.json();
+        if (data.success && Array.isArray(data.supports)) {
+            data.supports.forEach(support => {
+                if (support && support.elementId !== undefined && support.commentaire) {
+                    const option = document.createElement('option');
+                    option.value = support.elementId;
+                    option.textContent = support.commentaire;
+                    supportSelect.appendChild(option);
+                }
+            });
+        } else {
+            console.error('Format de données invalide:', data);
+        }
+    } catch (error) {
+        console.error('Erreur lors du chargement des supports:', error);
+    }
+}
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -112,12 +133,17 @@ const isNetlify = window.location.hostname.includes('netlify.app');
 const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
 
 getDataButton.addEventListener('click', async () => {
-    const elementId = elementIdInput.value;
+    const selectedElementId = supportSelect.value;
+    if (!selectedElementId) {
+        alert('Veuillez sélectionner un support');
+        return;
+    }
+
     try {
         const response = await fetch(`${apiBaseUrl}/getData`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ elementId }),
+            body: JSON.stringify({ elementId: selectedElementId }),
         });
 
         const contentType = response.headers.get("content-type");
@@ -126,8 +152,6 @@ getDataButton.addEventListener('click', async () => {
             if (data.success) {
                 latitudeInput.value = data.latitude;
                 longitudeInput.value = data.longitude;
-                commentaireInput.value = data.commentaire;
-                urlInput.value = data.google_maps;  
 
                 updateMap(data.latitude, data.longitude);
 

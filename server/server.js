@@ -17,6 +17,27 @@ console.log('Configuration Firebase chargée:', firebaseConfig);
 const database = getDatabase(firebaseApp);
 console.log('Base de données Firebase obtenue');
 
+app.get('/api/getSupports', async (req, res) => {
+    try {
+        const snapshot = await get(ref(database, 'elements'));
+        if (snapshot.exists()) {
+            const elements = snapshot.val();
+            const supports = elements.filter(el => el && el.elementid && el.commentaire)
+                                     .map(el => ({
+                                         elementId: el.elementid,
+                                         commentaire: el.commentaire
+                                     }));
+            res.json({ success: true, supports });
+        } else {
+            res.json({ success: false, message: 'Aucun support trouvé' });
+        }
+    } catch (error) {
+        console.error('Erreur lors de la récupération des supports:', error);
+        res.status(500).json({ success: false, error: 'Erreur serveur' });
+    }
+});
+
+
 app.post('/api/getData', async (req, res) => {
     console.log('Requête reçue sur /api/getData');
     const { elementId } = req.body;
@@ -39,8 +60,6 @@ app.post('/api/getData', async (req, res) => {
                     success: true,
                     latitude: element.latitude,
                     longitude: element.longitude,
-                    commentaire: element.commentaire,
-                    google_maps: element.google_maps,
                     imageUrl: element.image_url
                 });
             } else {
