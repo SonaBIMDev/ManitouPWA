@@ -1,4 +1,11 @@
-app.get('/api/getSupports', async (req, res) => {
+const { initializeApp } = require('firebase/app');
+const { getDatabase, ref, get } = require('firebase/database');
+const firebaseConfig = require('./firebase-config');
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+exports.handler = async (event, context) => {
     try {
         const snapshot = await get(ref(database, 'elements'));
         if (snapshot.exists()) {
@@ -8,12 +15,21 @@ app.get('/api/getSupports', async (req, res) => {
                                          elementId: el.elementid,
                                          commentaire: el.commentaire
                                      }));
-            res.json({ success: true, supports });
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ success: true, supports })
+            };
         } else {
-            res.json({ success: false, message: 'Aucun support trouvé' });
+            return {
+                statusCode: 404,
+                body: JSON.stringify({ success: false, message: 'Aucun support trouvé' })
+            };
         }
     } catch (error) {
         console.error('Erreur lors de la récupération des supports:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ success: false, error: 'Erreur serveur' })
+        };
     }
-});
+};
