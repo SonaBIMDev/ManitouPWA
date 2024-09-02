@@ -11,8 +11,8 @@ exports.handler = async (event) => {
   }
 
   try {
-    const { elementId, latitude, longitude, commentaire, google_maps } = JSON.parse(event.body);
-    console.log('Données reçues:', { elementId, latitude, longitude, commentaire, google_maps });
+    const { elementId, latitude, longitude } = JSON.parse(event.body);
+    console.log('Données reçues:', { elementId, latitude, longitude });
 
     const snapshot = await get(ref(database, 'elements'));
     let elements = snapshot.val() || [];
@@ -22,14 +22,9 @@ exports.handler = async (event) => {
     const updatedElement = {
       elementid: parseInt(elementId),
       latitude,
-      longitude,
-      commentaire
+      longitude
     };
-
-    if (google_maps !== undefined) {
-      updatedElement.google_maps = google_maps;
-    }
-
+    
     if (index !== -1) {
       elements[index] = updatedElement;
       console.log('Élément mis à jour:', elements[index]);

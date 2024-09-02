@@ -220,14 +220,12 @@ setDataButton.addEventListener('click', async () => {
     const elementId = elementIdInput.value;
     const latitude = latitudeInput.value;
     const longitude = longitudeInput.value;
-    const commentaire = commentaireInput.value;
-    const google_maps = urlInput.value;  // Assurez-vous que c'est bien 'google_maps' et non 'url'
   
     try {
       const response = await fetch(`${apiBaseUrl}/setData`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ elementId, latitude, longitude, commentaire, google_maps }),
+        body: JSON.stringify({ elementId, latitude, longitude }),
       });
       const result = await response.json();
       if (result.success) {

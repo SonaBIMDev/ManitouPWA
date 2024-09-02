@@ -44,6 +44,12 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
+#supportSelect {
+    height: 42px; /* Ajustez la valeur selon vos besoins */
+    font-size: 14px; /* Ajustez la taille de la police si nécessaire */
+}
+
+
 button {
     display: block;
     width: 100%;

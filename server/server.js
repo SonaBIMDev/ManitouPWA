@@ -79,32 +79,30 @@ app.post('/api/getData', async (req, res) => {
 
 app.post('/api/setData', async (req, res) => {
     console.log('Requête reçue sur /api/setData');
-    const { elementId, latitude, longitude, commentaire, google_maps } = req.body;
-    console.log('Données reçues:', { elementId, latitude, longitude, commentaire, google_maps });
+    const { elementId, latitude, longitude } = req.body;
+    console.log('Données reçues:', { elementId, latitude, longitude });
     try {
         const snapshot = await get(ref(database, 'elements'));
+        console.log('Snapshot récupéré:', snapshot.val());
         let elements = snapshot.val() || [];
+        if (!Array.isArray(elements)) {
+            console.error('Les éléments ne sont pas un tableau:', elements);
+            return res.status(500).json({ success: false, error: 'Structure de données invalide' });
+        }
         
         const index = elements.findIndex(el => el && el.elementid === parseInt(elementId));
+        console.log('Index trouvé:', index);
         
         const updatedElement = {
             elementid: parseInt(elementId),
             latitude,
-            longitude,
-            commentaire
-        };
-
-        // Ajouter google_maps seulement s'il est défini
-        if (google_maps !== undefined) {
-            updatedElement.google_maps = google_maps;
-        }
+            longitude
+        };        
 
         if (index !== -1) {
-            // Mise à jour d'un élément existant
             elements[index] = updatedElement;
             console.log('Élément mis à jour:', elements[index]);
         } else {
-            // Ajout d'un nouvel élément
             elements.push(updatedElement);
             console.log('Nouvel élément ajouté:', elements[elements.length - 1]);
         }
@@ -114,9 +112,10 @@ app.post('/api/setData', async (req, res) => {
         res.json({ success: true });
     } catch (error) {
         console.error('Erreur lors de l\'écriture des données:', error);
-        res.status(500).json({ success: false, error: 'Erreur serveur' });
+        res.status(500).json({ success: false, error: 'Erreur serveur', details: error.message });
     }
 });
+
 
 
 
