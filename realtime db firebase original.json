@@ -1,0 +1,43 @@
+[
+  null,
+  {
+    "commentaire": "",
+    "elementid": 272207,
+    "google_maps": "https://maps.app.goo.gl/EJV8PWrJ3gMA2tZWA",
+    "image_url": "https://maps.app.goo.gl/EJV8PWrJ3gMA2tZWA",
+    "latitude": "47.21405067951159",
+    "longitude": "-1.5421093348428068"
+  },
+  {
+    "commentaire": "Pierre",
+    "elementid": 317455,
+    "google_maps": "https://maps.app.goo.gl/SnwspjRME1wjNPss7",
+    "image_url": "https://maps.app.goo.gl/EJV8PWrJ3gMA2tZWA",
+    "latitude": 47.212356649,
+    "longitude": -1.546047067
+  },
+  {
+    "commentaire": "Accessoire",
+    "elementid": 265928,
+    "google_maps": "https://maps.app.goo.gl/QvrUmcVwNGraege58",
+    "image_url": "gs://manitou-a2370.appspot.com/accessoire.jpg",
+    "latitude": 47.2123204899,
+    "longitude": -1.546011546
+  },
+  {
+    "commentaire": "Jérôme",
+    "elementid": 423036,
+    "google_maps": "https://maps.app.goo.gl/34YQHndw8fe19W7F9",
+    "image_url": "https://maps.app.goo.gl/EJV8PWrJ3gMA2tZWA",
+    "latitude": 47.212229487,
+    "longitude": -1.545941067
+  },
+  {
+    "commentaire": "Machine",
+    "elementid": 292304,
+    "google_maps": "https://maps.app.goo.gl/3W5XvAxb1oxGcfWX9",
+    "image_url": "gs://manitou-a2370.appspot.com/machine.jpg",
+    "latitude": 47.212127324,
+    "longitude": -1.545819729
+  }
+]
