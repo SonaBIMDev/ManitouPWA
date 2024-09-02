@@ -24,7 +24,7 @@ exports.handler = async (event) => {
       latitude,
       longitude
     };
-    
+
     if (index !== -1) {
       elements[index] = updatedElement;
       console.log('Élément mis à jour:', elements[index]);
