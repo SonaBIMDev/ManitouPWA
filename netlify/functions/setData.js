@@ -26,9 +26,20 @@ exports.handler = async (event) => {
     };
 
     if (index !== -1) {
-      elements[index] = updatedElement;
+      // Mise à jour sélective : conserver les champs existants et mettre à jour seulement latitude et longitude
+      elements[index] = {
+        ...elements[index],
+        latitude,
+        longitude
+    };
       console.log('Élément mis à jour:', elements[index]);
     } else {
+      // Ajout d'un nouvel élément si non trouvé
+      const newElement = {
+        elementid: parsedElementId,
+        latitude,
+        longitude
+    };
       elements.push(updatedElement);
       console.log('Nouvel élément ajouté:', elements[elements.length - 1]);
     }
