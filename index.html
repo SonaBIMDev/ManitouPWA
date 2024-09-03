@@ -13,20 +13,54 @@
 </head>
 <body>
     <div class="main-container">
-        <div class="container">
-            <h1>Google Sheet PWA</h1>
+        <div class="container">            
+            <h2>Google Sheet PWA</h2>
             <select id="supportSelect">
                 <option value="">Quel est votre support ?</option>
                 <!-- Les options seront ajoutées dynamiquement via JavaScript -->
             </select>
-            <button id="getData">Get Data</button>
-            <div id="result">
-                <input type="text" id="latitude" placeholder="Latitude">
-                <input type="text" id="longitude" placeholder="Longitude">
-                <img id="imagePreview" src="" alt="Image preview" style="width:200px; height:200px; display:none;">
-            </div>
-            <button id="setData">Set Data</button>
-            <button onclick="getCurrentLocation()">Obtenir la position actuelle</button>
+            <div class="interval-container">
+                <span class="interval-label">Intervalle de mise à jour des coordonnées :</span>
+                <select id="intervalSelect">
+                    <option value="5000">5 secondes</option>
+                    <option value="10000">10 secondes</option>
+                    <option value="30000">30 secondes</option>
+                </select>
+                </div>
+            <!-- <button id="getData">Get Data</button> -->
+            <div class="switch-container">
+                <label class="switch">
+                  <input type="checkbox" id="toggleMap">
+                  <span class="slider round"></span>
+                </label>
+                <span class="switch-label">Afficher Google Maps</span>
+              </div>
+              
+              <div class="switch-container">
+                <label class="switch">
+                  <input type="checkbox" id="toggleTracking">
+                  <span class="slider round"></span>
+                </label>
+                <span class="switch-label">Activer le suivi GPS</span>
+              </div>              
+              
+                <div id="result">
+                    <div class="coordinate-label">
+                        <span>Latitude : </span>
+                        <span id="latitude">-</span>
+                    </div>
+                    <div class="coordinate-label">
+                        <span>Longitude : </span>
+                        <span id="longitude">-</span>
+                    </div>
+                    <img id="imagePreview" src="" alt="Image preview" style="width:100px; height:100px; display:none;">
+                </div>
+            <div id="logArea" style="background-color: #e0e0e0; padding: 10px; height: 100px; overflow-y: scroll;"></div>
+            <button id="clearLog">Effacer les logs</button>
+
+            
+            <!-- <button id="setData">Set Data</button> -->
+            <!-- <button onclick="getCurrentLocation()">Obtenir la position actuelle</button>-->
         </div>
         <div class="map-container">
             <h2>Google Map API</h2>

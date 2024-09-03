@@ -1,12 +1,22 @@
 const elementIdInput = document.getElementById('elementId');
-const getDataButton = document.getElementById('getData');
-const setDataButton = document.getElementById('setData');
 const latitudeInput = document.getElementById('latitude');
 const longitudeInput = document.getElementById('longitude');
 const commentaireInput = document.getElementById('commentaire');
 const imagePreview = document.getElementById('imagePreview');
 const urlInput = document.getElementById('url');
 const supportSelect = document.getElementById('supportSelect');
+const mapContainer = document.querySelector('.map-container');
+
+const isNetlify = window.location.hostname.includes('netlify.app');
+const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
+
+const toggleMapButton = document.getElementById('toggleMap');
+const toggleTrackingButton = document.getElementById('toggleTracking');
+const intervalSelect = document.getElementById('intervalSelect');
+const logArea = document.getElementById('logArea');
+const clearLogButton = document.getElementById('clearLog');
+
+let trackingInterval;
 
 let map;
 let marker;
@@ -39,6 +49,67 @@ async function loadSupports() {
         console.error('Erreur lors du chargement des supports:', error);
     }
 }
+
+supportSelect.addEventListener('change', async () => {
+    const selectedElementId = supportSelect.value;
+    if (!selectedElementId) {
+        alert('Veuillez sélectionner un support');
+        console.log('Veuillez sélectionner un support');
+        return;
+    }
+    const selectedOption = supportSelect.options[supportSelect.selectedIndex];
+    const selectedSupportName = selectedOption.textContent;
+    console.log('Vous avez sélectionné le support: ' + selectedSupportName);
+    
+    try {
+        const response = await fetch(`${apiBaseUrl}/getData`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ elementId: selectedElementId }),
+        });
+
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.indexOf("application/json") !== -1) {
+            const data = await response.json();
+            if (data.success) {
+                // Mise à jour des éléments span pour latitude et longitude
+                document.getElementById('latitude').textContent = data.latitude;
+                document.getElementById('longitude').textContent = data.longitude;
+
+                updateMap(data.latitude, data.longitude);
+
+                // Afficher l'image si une URL est fournie
+                if (data.imageUrl) {
+                    imagePreview.src = data.imageUrl;
+                    imagePreview.style.display = 'block';
+                } else {
+                    imagePreview.style.display = 'none';
+                }
+            } else {
+                alert('Données non trouvées');
+            }
+        } else {
+            const text = await response.text();
+            console.error('Réponse non-JSON reçue:', text);
+            alert('Erreur: Réponse inattendue du serveur');
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur est survenue');
+    }
+});
+
+// Redéfinir console.log pour afficher les logs dans logArea
+(function() {
+    const originalLog = console.log;
+    console.log = function(message) {
+        originalLog.apply(console, arguments);
+        const logMessage = document.createElement('div');
+        logMessage.textContent = message;
+        logArea.appendChild(logMessage);
+        logArea.scrollTop = logArea.scrollHeight;
+    };
+})();
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
@@ -115,8 +186,9 @@ function updateCoordinates(latLng) {
     const longitude = latLng.lng().toFixed(6);  // Obtenez la valeur numérique de la longitude
 
     // Mettre à jour les champs texte avec les coordonnées
-    document.getElementById('latitude').value = latitude;
-    document.getElementById('longitude').value = longitude;
+    document.getElementById('latitude').textContent = latitude;
+    document.getElementById('longitude').textContent = longitude;
+
 
     // Générer l'URL Google Maps
     const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
@@ -131,62 +203,104 @@ function updateCoordinates(latLng) {
 }
 
 
-const isNetlify = window.location.hostname.includes('netlify.app');
-const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
-
-getDataButton.addEventListener('click', async () => {
-    const selectedElementId = supportSelect.value;
-    if (!selectedElementId) {
-        alert('Veuillez sélectionner un support');
+async function setData(latitude, longitude) {
+    const elementId = supportSelect.value;
+    if (!elementId) {
+        console.log('Aucun support sélectionné');
         return;
     }
 
     try {
-        const response = await fetch(`${apiBaseUrl}/getData`, {
+        const response = await fetch(`${apiBaseUrl}/setData`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ elementId: selectedElementId }),
+            body: JSON.stringify({ elementId, latitude, longitude }),
         });
-
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-            const data = await response.json();
-            if (data.success) {
-                latitudeInput.value = data.latitude;
-                longitudeInput.value = data.longitude;
-
-                updateMap(data.latitude, data.longitude);
-
-                // Afficher l'image si une URL est fournie
-                if (data.imageUrl) {
-                    imagePreview.src = data.imageUrl;
-                    imagePreview.style.display = 'block';
-                } else {
-                    imagePreview.style.display = 'none';
-                }
-
-            } else {
-                alert('Données non trouvées');
-            }
+        const result = await response.json();
+        if (result.success) {
+            console.log('Données mises à jour avec succès');
         } else {
-            const text = await response.text();
-            console.error('Réponse non-JSON reçue:', text);
-            alert('Erreur: Réponse inattendue du serveur');
+            console.log('Échec de la mise à jour des données');
         }
     } catch (error) {
         console.error('Erreur:', error);
-        alert('Une erreur est survenue');
+        console.log('Une erreur est survenue lors de la mise à jour des données');
+    }
+}
+
+toggleMapButton.addEventListener('change', function() {
+    if (this.checked) {
+        mapContainer.style.display = 'block';
+        // Redimensionner la carte pour qu'elle s'ajuste correctement
+        google.maps.event.trigger(map, 'resize');
+        console.log('Map affichée');
+    } else {
+        mapContainer.style.display = 'none';
+        console.log('Map masquée');
     }
 });
 
-  
+// Écouteur pour le bouton de suivi GPS
+toggleTrackingButton.addEventListener('change', function() {
+    if (this.checked) {
+        startTracking();
+    } else {
+        clearInterval(trackingInterval);
+        trackingInterval = null;
+        console.log('Suivi GPS désactivé');
+    }
+});
 
-function getCurrentLocation() {
+function startTracking() {
+    const interval = parseInt(intervalSelect.value);
+    clearInterval(trackingInterval);
+    trackingInterval = setInterval(getCurrentLocation, interval);
+    console.log(`Suivi GPS activé avec un intervalle de ${interval}ms`);
+}
+
+intervalSelect.addEventListener('change', function() {
+    if (toggleTrackingButton.checked) {
+        startTracking();
+    }
+});
+
+// Fonction pour obtenir la position actuelle et mettre à jour les données
+async function getCurrentLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(showPosition, showError);
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+
+            // Mettre à jour les champs texte avec les coordonnées
+            document.getElementById('latitude').textContent = latitude;
+            document.getElementById('longitude').textContent = longitude;
+
+
+
+            // Mettre à jour la carte
+            updateMap(latitude, longitude);
+
+            // Appeler la fonction setData pour mettre à jour les données dans la base
+            await setData(latitude, longitude);
+        }, showError);
     } else {
         alert("Geolocation is not supported by this browser.");
     }
+}
+
+async function updatePositionAndData(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    // Mettre à jour les champs texte avec les coordonnées
+    document.getElementById("latitude").textContent = latitude;
+    document.getElementById("longitude").textContent = longitude;
+
+    // Mettre à jour la carte
+    updateMap(latitude, longitude);
+
+    // Appeler la fonction setData pour mettre à jour les données dans la base
+    await setData(latitude, longitude);
 }
 
 function showPosition(position) {
@@ -197,8 +311,8 @@ function showPosition(position) {
     console.log("Latitude: " + latitude + ", Longitude: " + longitude);
 
     // Mettre à jour les champs texte avec les coordonnées
-    document.getElementById("latitude").value = latitude;
-    document.getElementById("longitude").value = longitude;
+    document.getElementById("latitude").textContent = latitude;
+    document.getElementById("longitude").textContent = longitude;
 }
 
 function showError(error) {
@@ -218,30 +332,9 @@ function showError(error) {
     }
 }
 
-setDataButton.addEventListener('click', async () => {
-    const elementId = supportSelect.value; // Utilisez supportSelect au lieu de elementIdInput
-    const latitude = latitudeInput.value;
-    const longitude = longitudeInput.value;
-
-    try {
-        const response = await fetch(`${apiBaseUrl}/setData`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ elementId, latitude, longitude }),
-        });
-        const result = await response.json();
-        if (result.success) {
-            alert('Données mises à jour avec succès');
-        } else {
-            alert('Échec de la mise à jour des données');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
-    }
+clearLogButton.addEventListener('click', () => {
+    logArea.innerHTML = '';
 });
-
-
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')

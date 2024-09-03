@@ -16,13 +16,23 @@ body {
     margin: 0 auto;
 }
 
-.container, .map-container {
+.container {
     background-color: white;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
 }
+
+.map-container {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    display: none; /* Ceci cachera la carte par défaut */
+}
+
 
 #map {
     height: 400px;
@@ -36,6 +46,15 @@ body {
     margin-bottom: 15px;
 }
 
+.coordinate-label {
+    margin-bottom: 10px;
+}
+
+.coordinate-label span:first-child {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
 input[type="text"] {
     display: block;
     width: 100%;
@@ -44,9 +63,34 @@ input[type="text"] {
     box-sizing: border-box;
 }
 
-#supportSelect {
-    height: 42px; /* Ajustez la valeur selon vos besoins */
+#supportSelect, #intervalSelect {
+    height: 32px; /* Ajustez la valeur selon vos besoins */
     font-size: 14px; /* Ajustez la taille de la police si nécessaire */
+    margin-bottom: 0px; /* Ajustez cette valeur selon l'espace désiré */
+}
+
+.interval-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.interval-label {
+    margin-right: 10px;
+}
+
+#logArea {
+    background-color: #e0e0e0;
+    padding: 10px;
+    height: 100px;
+    overflow-y: scroll;
+    margin-top: 10px;
+    font-size: 12px; /* Ajustez cette valeur selon la taille désirée */
+    line-height: 1.4; /* Ajustez cette valeur pour l'espacement vertical entre les lignes */
+}
+
+#toggleMap, #toggleTracking, #intervalSelect {
+    margin-top: 10px;
 }
 
 
@@ -100,3 +144,56 @@ button:hover {
         margin-bottom: 0;
     }
 }
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 24px;
+    margin-bottom: 10px;
+  }
+  
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #f3212cb2;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(16px);
+  }
+  
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  
