@@ -115,7 +115,7 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: 0, lng: 0 },
         zoom: 2,
-        mapTypeId: 'satellite',
+        mapTypeId: 'roadmap',
         tilt: 0, // Assure une vue de dessus (2D)
         streetViewControl: false,
         fullscreenControl: false,
