@@ -275,18 +275,17 @@ async function getCurrentLocation() {
             document.getElementById('latitude').textContent = latitude;
             document.getElementById('longitude').textContent = longitude;
 
-
-
             // Mettre à jour la carte
             updateMap(latitude, longitude);
 
             // Appeler la fonction setData pour mettre à jour les données dans la base
             await setData(latitude, longitude);
-        }, showError);
+        }, showError, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
     } else {
         alert("Geolocation is not supported by this browser.");
     }
 }
+
 
 async function updatePositionAndData(position) {
     const latitude = position.coords.latitude;
