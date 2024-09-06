@@ -228,6 +228,7 @@ async function setData(latitude, longitude) {
     }
 }
 
+
 toggleMapButton.addEventListener('change', function() {
     if (this.checked) {
         mapContainer.style.display = 'block';
