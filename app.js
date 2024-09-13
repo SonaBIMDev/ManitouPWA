@@ -43,8 +43,8 @@ function updatePosition(position) {
     console.log(`Nouvelles coordonnées : lat ${lat}, lon ${lon}`);
 
     // Mettre à jour les champs texte avec les coordonnées
-    document.getElementById('latitude').textContent = lat;
-    document.getElementById('longitude').textContent = lon;
+    document.getElementById('latitude').textContent = parseFloat(lat).toFixed(6);
+    document.getElementById('longitude').textContent = parseFloat(lon).toFixed(6);
 
     if (!map) {
         console.log("Première initialisation de la carte");
@@ -189,56 +189,6 @@ intervalSelect.addEventListener('change', function() {
     startWatchingPosition();
 });
 
-
-// Fonction pour obtenir la position actuelle et mettre à jour les données
-async function getCurrentLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-            
-            document.getElementById('latitude').textContent = latitude;
-            document.getElementById('longitude').textContent = longitude;
-            
-            updateMap(latitude, longitude);
-            await setData(latitude, longitude);
-        }, showError, {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-        });
-    } else {
-        alert("La géolocalisation n'est pas supportée par ce navigateur.");
-    }
-}
-
-
-async function updatePositionAndData(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    // Mettre à jour les champs texte avec les coordonnées
-    document.getElementById("latitude").textContent = latitude;
-    document.getElementById("longitude").textContent = longitude;
-
-    // Mettre à jour la carte
-    updateMap(latitude, longitude);
-
-    // Appeler la fonction setData pour mettre à jour les données dans la base
-    await setData(latitude, longitude);
-}
-
-function showPosition(position) {
-    const latitude = position.coords.latitude;
-    const longitude = position.coords.longitude;
-
-    // Afficher les coordonnées ou les utiliser pour autre chose
-    console.log("Latitude: " + latitude + ", Longitude: " + longitude);
-
-    // Mettre à jour les champs texte avec les coordonnées
-    document.getElementById("latitude").textContent = latitude;
-    document.getElementById("longitude").textContent = longitude;
-}
 
 function showError(error) {
     switch(error.code) {
