@@ -12,21 +12,83 @@ const apiBaseUrl = isNetlify ? '/.netlify/functions' : '/api';
 
 const toggleMapButton = document.getElementById('toggleMap');
 const toggleTrackingButton = document.getElementById('toggleTracking');
-const intervalSelect = document.getElementById('intervalSelect');
 const logArea = document.getElementById('logArea');
 const clearLogButton = document.getElementById('clearLog');
 
-let trackingInterval;
 
 let map;
 let marker;
+let watchId;
 
 // Appelez initMap au chargement de la page
 window.onload = function() {
-    // Appeler la fonction initMap pour initialiser la carte
-    initMap();
+    startWatchingPosition();
     loadSupports();    
 };
+
+function initMap(lat, lon) {
+    console.log(`Initialisation de la carte avec lat: ${lat}, lon: ${lon}`);
+    map = L.map('map').setView([lat, lon], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    marker = L.marker([lat, lon]).addTo(map);
+    console.log("Carte initialisée");
+}
+
+function updatePosition(position) {
+    console.log("Position mise à jour reçue");
+    const lat = position.coords.latitude;
+    const lon = position.coords.longitude;
+    console.log(`Nouvelles coordonnées : lat ${lat}, lon ${lon}`);
+
+    // Mettre à jour les champs texte avec les coordonnées
+    document.getElementById('latitude').textContent = lat;
+    document.getElementById('longitude').textContent = lon;
+
+    if (!map) {
+        console.log("Première initialisation de la carte");
+        initMap(lat, lon);
+    } else {
+        console.log("Mise à jour de la position sur la carte existante");
+        map.setView([lat, lon], 20);
+        marker.setLatLng([lat, lon]);
+    }
+
+    // Appeler la fonction setData pour mettre à jour les données dans la base
+    setData(lat, lon);
+}
+
+function handleError(error) {
+    console.error("Erreur de géolocalisation:", error.message);
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("L'utilisateur a refusé la demande de géolocalisation.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("Les informations de localisation sont indisponibles.");
+            break;
+        case error.TIMEOUT:
+            alert("La demande de géolocalisation a expiré.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("Une erreur inconnue s'est produite.");
+            break;
+    }
+}
+
+function startWatchingPosition() {
+    if ("geolocation" in navigator) {
+        console.log("Géolocalisation supportée, démarrage de watchPosition");
+        watchId = navigator.geolocation.watchPosition(updatePosition, handleError, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        });
+    } else {
+        console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+    }
+}
 
 // Fonction pour charger la liste des supports
 async function loadSupports() {
@@ -50,6 +112,7 @@ async function loadSupports() {
     }
 }
 
+
 supportSelect.addEventListener('change', async () => {
     const selectedElementId = supportSelect.value;
     if (!selectedElementId) {
@@ -61,42 +124,6 @@ supportSelect.addEventListener('change', async () => {
     const selectedSupportName = selectedOption.textContent;
     console.log('Vous avez sélectionné le support: ' + selectedSupportName);
     
-    try {
-        const response = await fetch(`${apiBaseUrl}/getData`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ elementId: selectedElementId }),
-        });
-
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.indexOf("application/json") !== -1) {
-            const data = await response.json();
-            if (data.success) {
-                // Mise à jour des éléments span pour latitude et longitude
-                document.getElementById('latitude').textContent = data.latitude;
-                document.getElementById('longitude').textContent = data.longitude;
-
-                updateMap(data.latitude, data.longitude);
-
-                // Afficher l'image si une URL est fournie
-                if (data.imageUrl) {
-                    imagePreview.src = data.imageUrl;
-                    imagePreview.style.display = 'block';
-                } else {
-                    imagePreview.style.display = 'none';
-                }
-            } else {
-                alert('Données non trouvées');
-            }
-        } else {
-            const text = await response.text();
-            console.error('Réponse non-JSON reçue:', text);
-            alert('Erreur: Réponse inattendue du serveur');
-        }
-    } catch (error) {
-        console.error('Erreur:', error);
-        alert('Une erreur est survenue');
-    }
 });
 
 // Redéfinir console.log pour afficher les logs dans logArea
@@ -110,97 +137,6 @@ supportSelect.addEventListener('change', async () => {
         logArea.scrollTop = logArea.scrollHeight;
     };
 })();
-
-function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 0, lng: 0 },
-        zoom: 2,
-        mapTypeId: 'roadmap',
-        tilt: 0, // Assure une vue de dessus (2D)
-        streetViewControl: false,
-        fullscreenControl: false,
-        mapTypeControl: false,
-        zoomControl: true,
-        zoomControlOptions: {
-            position: google.maps.ControlPosition.RIGHT_BOTTOM
-        },
-    });
-
-    marker = new google.maps.Marker({
-        map: map,
-        position: { lat: 0, lng: 0 }
-    });
-
-    // Ajoutez un écouteur pour le clic droit sur la carte
-    map.addListener('rightclick', function(e) {
-        showContextMenu(e.domEvent, e.latLng, map);
-    });
-}
-
-function updateMap(lat, lng) {
-    const position = { lat: parseFloat(lat), lng: parseFloat(lng) };
-    map.setCenter(position);
-    map.setZoom(20);
-    marker.setPosition(position);
-}
-
-function showContextMenu(event, latLng, map) {
-    const contextMenu = document.createElement('div');
-    contextMenu.className = 'context-menu';
-    contextMenu.innerHTML = '<div class="context-menu-item">Utiliser ces coordonnées</div>';
-
-    // Positionnez le menu à l'endroit du clic
-    const mapDiv = map.getDiv();
-    const mapRect = mapDiv.getBoundingClientRect();
-    
-    contextMenu.style.position = 'absolute';
-    contextMenu.style.left = (event.clientX - mapRect.left) + 'px';
-    contextMenu.style.top = (event.clientY - mapRect.top) + 'px';
-
-    // Ajoutez le menu directement au conteneur de la carte
-    mapDiv.appendChild(contextMenu);
-
-    // Gérez le clic sur l'option du menu
-    contextMenu.querySelector('.context-menu-item').addEventListener('click', function() {
-        updateCoordinates(latLng);
-        mapDiv.removeChild(contextMenu);
-    });
-
-    // Supprimez le menu après un court délai si aucune action n'est effectuée
-    setTimeout(() => {
-        if (mapDiv.contains(contextMenu)) {
-            mapDiv.removeChild(contextMenu);
-        }
-    }, 3000);
-
-    // Fermez le menu si on clique ailleurs sur la carte
-    map.addListener('click', function() {
-        if (mapDiv.contains(contextMenu)) {
-            mapDiv.removeChild(contextMenu);
-        }
-    });
-}
-
-function updateCoordinates(latLng) {
-    const latitude = latLng.lat().toFixed(6);  // Obtenez la valeur numérique de la latitude
-    const longitude = latLng.lng().toFixed(6);  // Obtenez la valeur numérique de la longitude
-
-    // Mettre à jour les champs texte avec les coordonnées
-    document.getElementById('latitude').textContent = latitude;
-    document.getElementById('longitude').textContent = longitude;
-
-
-    // Générer l'URL Google Maps
-    const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
-    console.error('googleMapsUrl:', googleMapsUrl);
-
-    // Mettre à jour le champ texte URL avec l'URL générée
-    document.getElementById('url').value = googleMapsUrl;
-
-    // Mettez à jour le marqueur sur la carte
-    marker.setPosition(latLng);
-    map.setCenter(latLng);
-}
 
 
 async function setData(latitude, longitude) {
@@ -228,42 +164,31 @@ async function setData(latitude, longitude) {
     }
 }
 
-
-toggleMapButton.addEventListener('change', function() {
-    if (this.checked) {
-        mapContainer.style.display = 'block';
-        // Redimensionner la carte pour qu'elle s'ajuste correctement
-        google.maps.event.trigger(map, 'resize');
-        console.log('Map affichée');
-    } else {
-        mapContainer.style.display = 'none';
-        console.log('Map masquée');
-    }
-});
-
 // Écouteur pour le bouton de suivi GPS
 toggleTrackingButton.addEventListener('change', function() {
     if (this.checked) {
-        startTracking();
+        startWatchingPosition();
     } else {
-        clearInterval(trackingInterval);
-        trackingInterval = null;
+        if (watchId) {
+            navigator.geolocation.clearWatch(watchId);
+            watchId = null;
+        }
         console.log('Suivi GPS désactivé');
     }
 });
 
-function startTracking() {
-    const interval = parseInt(intervalSelect.value);
-    clearInterval(trackingInterval);
-    trackingInterval = setInterval(getCurrentLocation, interval);
-    console.log(`Suivi GPS activé avec un intervalle de ${interval}ms`);
+function getSelectedInterval() {
+    return parseInt(intervalSelect.value);
 }
 
+
 intervalSelect.addEventListener('change', function() {
-    if (toggleTrackingButton.checked) {
-        startTracking();
+    if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
     }
+    startWatchingPosition();
 });
+
 
 // Fonction pour obtenir la position actuelle et mettre à jour les données
 async function getCurrentLocation() {
@@ -271,19 +196,19 @@ async function getCurrentLocation() {
         navigator.geolocation.getCurrentPosition(async (position) => {
             const latitude = position.coords.latitude;
             const longitude = position.coords.longitude;
-
-            // Mettre à jour les champs texte avec les coordonnées
+            
             document.getElementById('latitude').textContent = latitude;
             document.getElementById('longitude').textContent = longitude;
-
-            // Mettre à jour la carte
+            
             updateMap(latitude, longitude);
-
-            // Appeler la fonction setData pour mettre à jour les données dans la base
             await setData(latitude, longitude);
-        }, showError, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
+        }, showError, {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        });
     } else {
-        alert("Geolocation is not supported by this browser.");
+        alert("La géolocalisation n'est pas supportée par ce navigateur.");
     }
 }
 
@@ -340,4 +265,12 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')
         .then(registration => console.log('Service Worker enregistré'))
         .catch(error => console.log('Erreur d\'enregistrement du Service Worker:', error));
+}
+
+
+// Vérification de Leaflet
+if (typeof L !== 'undefined') {
+    console.log("Leaflet est chargé");
+} else {
+    console.error("Leaflet n'est pas chargé");
 }

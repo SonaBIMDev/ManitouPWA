@@ -8,6 +8,8 @@
     <title>Google Sheet PWA</title>
     <link rel="stylesheet" href="/style.css">
     <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <link rel="apple-touch-icon" href="/LogoManitou-180x180.png">    
     <meta name="apple-mobile-web-app-capable" content="yes">    
 </head>
@@ -18,24 +20,8 @@
             <select id="supportSelect">
                 <option value="">Quel est votre support ?</option>
                 <!-- Les options seront ajoutées dynamiquement via JavaScript -->
-            </select>
-            <div class="interval-container">
-                <span class="interval-label">Intervalle de mise à jour des coordonnées :</span>
-                <select id="intervalSelect">
-                    <option value="5000">5 secondes</option>
-                    <option value="10000">10 secondes</option>
-                    <option value="30000">30 secondes</option>
-                </select>
-                </div>
-            <!-- <button id="getData">Get Data</button> -->
-            <div class="switch-container">
-                <label class="switch">
-                  <input type="checkbox" id="toggleMap">
-                  <span class="slider round"></span>
-                </label>
-                <span class="switch-label">Afficher Google Maps</span>
-              </div>
-              
+            </select>            
+            <!-- <button id="getData">Get Data</button> -->    
               <div class="switch-container">
                 <label class="switch">
                   <input type="checkbox" id="toggleTracking">
@@ -62,8 +48,9 @@
             <!-- <button onclick="getCurrentLocation()">Obtenir la position actuelle</button>-->
         </div>
         <div class="map-container">
-            <h2>Google Map API</h2>
+            <h2>Carte</h2>
             <div id="map"></div>
+            <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
         </div>
     </div>
     <script src="/app.js"></script>
@@ -73,7 +60,6 @@
                 .then((reg) => console.log('Service worker registered', reg))
                 .catch((err) => console.log('Service worker not registered', err));
         }
-    </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDf8su5VGkJyPrblaoNpXkYGIgPkmB5eQw&callback=initMap" async defer></script>
+    </script>    
 </body>
 </html>
