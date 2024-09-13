@@ -20,6 +20,17 @@ let map;
 let marker;
 let watchId;
 
+
+document.addEventListener('DOMContentLoaded', function() {
+    const logArea = document.getElementById('logArea');
+    const clearLogButton = document.getElementById('clearLog');
+
+    clearLogButton.addEventListener('click', () => {
+        logArea.innerHTML = '';
+        console.log('Logs effacés'); // Ajoutez cette ligne pour le débogage
+    });
+});
+
 // Appelez initMap au chargement de la page
 window.onload = function() {
     startWatchingPosition();
@@ -207,9 +218,9 @@ function showError(error) {
     }
 }
 
-clearLogButton.addEventListener('click', () => {
-    logArea.innerHTML = '';
-});
+
+
+
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js')

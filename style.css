@@ -85,8 +85,10 @@ input[type="text"] {
     height: 100px;
     overflow-y: scroll;
     margin-top: 10px;
+    z-index: 1001; /* Assurez-vous qu'il est au-dessus de la zone de log */
     font-size: 12px; /* Ajustez cette valeur selon la taille désirée */
     line-height: 1.4; /* Ajustez cette valeur pour l'espacement vertical entre les lignes */
+    cursor: pointer;
 }
 
 #toggleMap, #toggleTracking, #intervalSelect {
