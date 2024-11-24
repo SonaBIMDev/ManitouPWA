@@ -1,6 +1,6 @@
 {
     "name": "Manitou Google Sheet PWA",
-    "short_name": "Manitou PWA",
+    "short_name": "Mayence PWA",
     "description": "Mise à jour des coordonnées GPS dans une GoogleSheet",
     "start_url": "/",
     "display": "standalone",
